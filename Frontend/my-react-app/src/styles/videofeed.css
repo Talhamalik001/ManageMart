@@ -1,0 +1,19 @@
+.feed-container {
+  max-width: 1000px;
+  margin: 50px auto;
+  text-align: center;
+}
+
+.videos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.video-card {
+  padding: 10px;
+  background-color: #f7f8fc;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
