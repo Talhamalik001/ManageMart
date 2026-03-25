@@ -10,7 +10,7 @@ router = APIRouter()
 
 # ✅ CREATE PRODUCT
 @router.post("/")
-async def add_product(product: Product):
+def add_product(product: Product):
     db: Session = SessionLocal()
 
     new_product = ProductModel(**product.dict())
@@ -31,9 +31,9 @@ async def add_product(product: Product):
     }
 
 
-@router.get("/")
+@router.get("/caching")
 @lru_cache(maxsize=1)
-async def get_products():
+def get_products():
     db: Session = SessionLocal()
     products = db.query(ProductModel).all()
     db.close()
@@ -52,7 +52,7 @@ async def get_products():
 
 # ✅ GET ALL PRODUCTS
 @router.get("/")
-async def get_products():
+def get_products():
     db: Session = SessionLocal()
 
     products = db.query(ProductModel).all()
@@ -74,7 +74,7 @@ async def get_products():
 
 # ✅ GET SINGLE PRODUCT
 @router.get("/{product_id}")
-async def get_product(product_id: int):
+def get_product(product_id: int):
     db: Session = SessionLocal()
 
     product = db.query(ProductModel).filter(ProductModel.id == product_id).first()
@@ -97,7 +97,7 @@ async def get_product(product_id: int):
 
 # ✅ UPDATE PRODUCT
 @router.put("/{product_id}")
-async def update_product(product_id: int, updated_data: Product):
+def update_product(product_id: int, updated_data: Product):
     db: Session = SessionLocal()
 
     product = db.query(ProductModel).filter(ProductModel.id == product_id).first()
@@ -122,7 +122,7 @@ async def update_product(product_id: int, updated_data: Product):
 
 # ✅ DELETE PRODUCT
 @router.delete("/{product_id}")
-async def delete_product(product_id: int):
+def delete_product(product_id: int):
     db: Session = SessionLocal()
 
     product = db.query(ProductModel).filter(ProductModel.id == product_id).first()

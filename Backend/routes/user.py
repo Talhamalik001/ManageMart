@@ -1,13 +1,13 @@
 from fastapi import APIRouter, HTTPException
 from database import SessionLocal
 from models.user import User
-from functools import lru_cache  # simple in-memory cache
+from functools import lru_cache  
 
 router = APIRouter()
 
 # GET ALL USERS with caching
 @router.get("/all")
-@lru_cache(maxsize=1)  # memory me 1 copy store hogi
+@lru_cache(maxsize=1)  
 def get_all_users():
     db = SessionLocal()
     users = db.query(User).all()
@@ -18,9 +18,9 @@ def get_all_users():
         result.append({
             "name": user.name,
             "email": user.email,
-            "joined": "2026-03-18",  # replace with actual column if available
-            "status": "Active",      # replace with DB column if available
-            "payment": "Unpaid"      # replace with DB column if available
+            "joined": "2026-03-18",  
+            "status": "Active",      
+            "payment": "Unpaid"     
         })
     return result
 
@@ -36,9 +36,9 @@ def get_all_users():
         result.append({
             "name": user.name,
             "email": user.email,
-            "joined": "2026-03-18",  # make sure column exists
-            "status": "Active",  # ya DB se lo agar hai
-            "payment": "Unpaid"  # ya DB se lo agar hai
+            "joined": "2026-03-18", 
+            "status": "Active",  
+            "payment": "Unpaid" 
         })
 
     db.close()
@@ -93,7 +93,7 @@ def update_profile(email: str, data: dict):
 
 # DELETE USER
 @router.delete("/{email}")
-async def delete_user(email: str):
+def delete_user(email: str):
     db = SessionLocal()
 
     user = db.query(User).filter(User.email == email).first()
@@ -108,6 +108,3 @@ async def delete_user(email: str):
 
     return {"message": "User deleted"}
 
-from fastapi import APIRouter, HTTPException
-from database import SessionLocal
-from models.user import User

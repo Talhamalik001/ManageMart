@@ -8,7 +8,7 @@ import os
 
 router = APIRouter()
 
-stripe.api_key = os.getenv("STRIPE_SECRET_KEY")  # tumhara stripe secret
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")  
 
 # Create Stripe Payment Intent
 @router.post("/create-payment-intent")

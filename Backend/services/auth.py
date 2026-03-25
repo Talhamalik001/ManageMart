@@ -1,4 +1,3 @@
-
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from database import SessionLocal
@@ -22,7 +21,8 @@ def create_user(user: UserCreate):
     new_user = User(
         email=user.email,
         name=user.name,
-        password=user.password
+        # password=user.password
+        password=hash_password(user.password)  # ✅ hash here
     )
 
     db.add(new_user)
@@ -32,25 +32,27 @@ def create_user(user: UserCreate):
     return {"message": "User created successfully"}
 
 
+
 # ✅ LOGIN USER
 def authenticate_user(user: UserLogin):
     db: Session = SessionLocal()
 
     stored_user = db.query(User).filter(User.email == user.email).first()
 
-    # Check if user exists and if password is correct
     if not stored_user:
         db.close()
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
-    if not verify_password(user.password, stored_user.password):  # Verify with truncation
+
+    if not verify_password(user.password, stored_user.password):
         db.close()
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
-    # Create JWT token
     access_token = create_access_token(data={"sub": user.email})
 
     db.close()
 
-    # Return token with successful login message
-    return {"message": f"Welcome back {user.email}", "access_token": access_token}
+    return {
+        "message": f"Welcome back {user.email}",
+        "access_token": access_token
+    }
