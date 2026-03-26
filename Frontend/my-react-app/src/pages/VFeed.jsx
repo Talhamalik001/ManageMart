@@ -1,50 +1,45 @@
-
 import React, { useEffect, useState } from "react";
+import { fetchPhotos, fetchVideos } from "../api";
 import "../styles/videofeed.css";
-import { fetchVideos } from "../api";
 
 const VFeed = () => {
-  const [videos, setVideos] = useState([]);
+  const [media, setMedia] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadVideos = async () => {
+    const loadMedia = async () => {
       try {
         const vids = await fetchVideos();
-
-        if (vids && vids.length > 0) {
-          setVideos(vids.reverse()); // latest first
-        } else {
-          console.log("No videos found");
-        }
-      } catch (error) {
-        console.error("Error loading videos:", error);
+        const imgs = await fetchPhotos();
+        const combined = [
+          ...vids.map(url => ({ url, type: "video" })),
+          ...imgs.map(url => ({ url, type: "image" }))
+        ];
+        setMedia(combined.reverse()); // latest first
+      } catch (err) {
+        console.error(err);
       } finally {
         setLoading(false);
       }
     };
-
-    loadVideos();
+    loadMedia();
   }, []);
 
   return (
     <div className="feed-container">
-      <h2>Video Feed</h2>
-
+      <h2>Media Feed</h2>
+      {loading && <p>Loading media...</p>}
+      {!loading && media.length === 0 && <p>No media uploaded yet.</p>}
       <div className="videos-grid">
-        {loading && <p>Loading videos...</p>}
-
-        {!loading && videos.length === 0 && (
-          <p>Noooo videos uploaded yet.</p>
-        )}
-
-        {!loading &&
-          videos.length > 0 &&
-          videos.map((url, index) => (
-            <div key={index} className="video-card">
-              <video src={url} controls width="320" />
-            </div>
-          ))}
+        {media.map((item, idx) => (
+          <div key={idx} className="video-card">
+            {item.type === "video" ? (
+              <video src={item.url} controls width="320" />
+            ) : (
+              <img src={item.url} alt="uploaded" width="320" />
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );

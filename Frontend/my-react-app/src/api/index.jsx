@@ -1,39 +1,51 @@
 import axios from "axios";
 
-
 const API_BASE_URL = "http://localhost:9000/api";
 
-// Axios instance
-export const api = axios.create({
-  baseURL: API_BASE_URL,
-});
+export const api = axios.create({ baseURL: API_BASE_URL });
 
-// ✅ Upload Video
-export const uploadVideo = async (file) => {
+// Upload any media (image/video)
+export const uploadMedia = async (file) => {
   const formData = new FormData();
   formData.append("file", file);
 
   try {
-    const res = await api.post("/protected/media/video", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    return res.data.url;
-  } catch (error) {
-    console.error("Error uploading video:", error);
-    throw new Error("Failed to upload video");
+    let url;
+    if (file.type.startsWith("image/")) {
+      const res = await api.post("/protected/media/photo", formData);
+      url = res.data.url;
+    } else if (file.type.startsWith("video/")) {
+      const res = await api.post("/protected/media/video", formData);
+      url = res.data.url;
+    } else {
+      throw new Error("Unsupported file type");
+    }
+    return url;
+  } catch (err) {
+    console.error("Upload error:", err);
+    throw err;
   }
 };
 
-// ✅ Fetch Videos
+// Fetch photos
+export const fetchPhotos = async () => {
+  try {
+    const res = await api.get("/protected/media/photos");
+    console.log("Photos response:", res.data); // debug
+    return res.data.photos;
+  } catch (error) {
+    console.error("Error fetching photos:", error);
+    return [];
+  }
+};
+
+// Fetch videos
 export const fetchVideos = async () => {
   try {
     const res = await api.get("/protected/media/videos");
     return res.data.videos;
-  } catch (error) {
-    console.error("Error fetching videos:", error);
-    throw new Error("Failed to fetch videos");
+  } catch (err) {
+    console.error("Error fetching videos:", err);
+    return [];
   }
 };

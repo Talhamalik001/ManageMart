@@ -1,7 +1,7 @@
-from io import BytesIO
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+from io import BytesIO
 import os
 from dotenv import load_dotenv
 
@@ -14,32 +14,22 @@ cloudinary.config(
 )
 
 def upload_photo(file):
-    """Uploads image to Cloudinary photos folder"""
     result = cloudinary.uploader.upload(file, folder="photos")
     return result.get("secure_url")
 
 def upload_video(file):
-    """Uploads video to Cloudinary videos folder"""
     result = cloudinary.uploader.upload_large(file, resource_type="video", folder="videos")
     return result.get("secure_url")
 
-# Fetch videos
 def fetch_videos():
     try:
-      
         response = cloudinary.api.resources(
-        resource_type="video",
-        type="upload",
-        max_results=100
-)
-        print("Raw Cloudinary response:", response)  # 🔥 DEBUG
+            resource_type="video",
+            type="upload",
+            max_results=100
+        )
         resources = response.get("resources", [])
-        if not resources:
-            print("No videos found in 'videos/' folder.")
-            return []
-        urls = [res["secure_url"] for res in resources]
-        print(f"Videos fetched: {urls}")
-        return urls
+        return [res["secure_url"] for res in resources]
     except Exception as e:
         print("Error fetching videos:", e)
         return []
